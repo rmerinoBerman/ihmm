@@ -12,10 +12,11 @@ var filesToVariablesArray = [
     {'text_input': 'views/input_text.php'},
     {'mainView': 'views/mainView.php'},
     {'page_section': 'views/page_section.php'},
+    {'sponsors_wrapper': 'views/output_sponsors_wrapper.php'},
+    {'output_event': 'views/output_event.php'},
     {'output_sponsor': 'views/output_sponsor.php'},
     {'sticky_side': 'views/output_sticky_side.php'},
     {'person_item': 'views/output_person_item.php'},
-    {'event_item': 'views/output_event_item.php'},
     {'slide_page': 'views/output_slide_page.php'}
 ];
 var pageOrder;
@@ -149,25 +150,25 @@ function startUp(){
                         pagesCollection['pageData'][index].css('z-index', zIndexMax--);
                         $('.mainView').append(pagesCollection['pageData'][index]);
 
-                        // define object
-                        returnObject = $(php_page_section);
+                        returnJsonData('listSponsor_categories').done(function(data){
+                            // define object
+                            returnObject = $(php_page_section);
 
-                        // build object
-                        returnObject.find('.pageInfo h2').html(index);
-                        returnObject.find('.all-content').addClass(index);
+                            // build object
+                            returnObject.find('.pageInfo h2').html(index);
+                            returnObject.find('.all-content').addClass(index);
 
-                        returnJsonData('listSponsor_categories', jsonArgs1).done(function(data){
-
-                            returnJsonData('listSponsors', jsonArgs1).done(function(sponsorsData) {
+                            returnJsonData('listSponsors').done(function(sponsorsData) {
                                 debug0 = sponsorsData;
+
+                                // Loop Sponsor categories
                                 _.each(data, function(value, key) {
-                                    returnSponsorCategory = $('<div />');
-                                    returnSponsorCategoryUl = $('<ul />');
+                                    returnSponsorWrapper = $(php_sponsors_wrapper)
 
-                                    returnSponsorCategory.addClass(slugify(value.the_title));
-                                    returnSponsorCategory.data('sponsorid', value.post_id);
-                                    returnSponsorCategory.html(returnSponsorCategoryUl);
+                                    returnSponsorWrapper.addClass(slugify(value.the_title));
+                                    returnSponsorWrapper.find('h3').html(value.the_title);
 
+                                    // Loop sponsors
                                     _.each(sponsorsData, function(value1, key1) {
                                         returnSponsor = $(php_output_sponsor);
 
@@ -189,19 +190,20 @@ function startUp(){
                                         });
 
                                         if (value.post_id == value1.sponsor_type) {
-                                            returnObject.find('.all-content').find('div[class="'+ slugify(value.the_title) +'"] ul').append(returnSponsor);
+                                            returnSponsorWrapper.find('ul').append(returnSponsor);
                                         }
 
                                     });
 
-                                    returnObject.find('.all-content').append(returnSponsorCategory);
+                                    returnObject.find('.all-content').append(returnSponsorWrapper);
                                 });
                             });
 
+                            // Append return object to DOM
                             $('#' + index).find('.container').html(returnObject);
-        console.log(returnObject.html())
 
-                            $('#sponsors').flowtype({
+                            // Initiate FlowType
+                            $('#' + index).flowtype({
                                 minFont : 28,
                                 maxFont : 36
                             });
@@ -214,15 +216,51 @@ function startUp(){
                         pagesCollection['pageData'][index].css('z-index', zIndexMax--);
                         $('.mainView').append(pagesCollection['pageData'][index]);
 
-                        // define object
-                        returnObject = $(php_page_section);
+                        returnJsonData('listEvents').done(function(data){
+                            // define object
+                            returnObject = $(php_page_section);
 
-                        // build object
-                        returnObject.find('.pageInfo h2').html(index);
-                        returnObject.find('.all-content').addClass(index);
-                        returnJsonData('listPeople', jsonArgs1).done(function(data){
-                            
+                            // build object
+                            returnObject.find('.pageInfo h2').html(index);
+                            returnObject.find('.all-content').addClass(index);
+
+                            // Loop events
+                            _.each(data, function(value, key) {
+                                returnEvent = $(php_output_event);
+
+                                _.each(value, function(val, k) {
+                                    switch(k) {
+                                        case "start_date":
+                                            startDate = moment.unix(val).format('MMM DD, YY : hh:mm A');
+                                            returnEvent.find('.' + k).html(startDate);
+                                            break
+                                        case "end_date":
+                                            endDate = moment.unix(val).format('MMM DD, YY : hh:mm A');
+                                            returnEvent.find('.' + k).html(endDate);
+                                            break
+                                        case "the_content":
+                                            returnEvent.find('.' + k).html(_.unescape(val))
+                                            break;
+                                        default:
+                                            returnEvent.find('.' + k).html(val);
+                                            break;
+                                    }
+                                });
+
+                                returnObject.find('.all-content').append(returnEvent);
+
+                            });
+
+                            // Append return object to DOM
+                            $('#' + index).find('.container').html(returnObject);
+
+                            // Initiate FlowType
+                            $('#' + index).flowtype({
+                                minFont : 28,
+                                maxFont : 36
+                            });
                         });
+
                         break;
 
                     case "speakers":
@@ -230,30 +268,37 @@ function startUp(){
                         pagesCollection['pageData'][index].css('z-index', zIndexMax--);
                         $('.mainView').append(pagesCollection['pageData'][index]);
 
-                        // define object
-                        returnObject = $(php_page_section);
+                        returnJsonData('listPeople_category').done(function(data){
+                            console.log(data)
+                            // define object
+                            returnObject = $(php_page_section);
 
-                        // build object
-                        returnObject.find('.pageInfo h2').html(index);
-                        returnObject.find('.all-content').addClass(index);
-                        returnJsonData('listPeople', jsonArgs1).done(function(data){
-                            
-                        });
-                        break;
+                            // build object
+                            returnObject.find('.pageInfo h2').html(index);
+                            returnObject.find('.all-content').addClass(index);
 
-                    case "contact":
-                        pagesCollection['pageData'][index].attr('data-stellar-background-ratio', Math.random())
-                        pagesCollection['pageData'][index].css('z-index', zIndexMax--);
-                        $('.mainView').append(pagesCollection['pageData'][index]);
+                            returnJsonData('listPeople').done(function(peopleData) {
 
-                        // define object
-                        returnObject = $(php_page_section);
+                                // _.each(data, function(value, key) {
+                                //     returnSpeakersWrapper = $(php_sponsors_wrapper);
 
-                        // build object
-                        returnObject.find('.pageInfo h2').html(index);
-                        returnObject.find('.all-content').addClass(index);
-                        returnJsonData('listPeople', jsonArgs1).done(function(data){
-                            
+                                //     returnSpeakersWrapper.addClass(slugify(value.the_title));
+                                //     returnSpeakersWrapper.find('h3').html(value.the_title);
+
+                                //     returnObject.find('.all-content').append(returnSpeakersWrapper);
+
+                                // });
+
+                            });
+
+                            // Append return object to DOM
+                            $('#' + index).find('.container').html(returnObject);
+
+                            // Initiate FlowType
+                            $('#' + index).flowtype({
+                                minFont : 28,
+                                maxFont : 36
+                            });
                         });
                         break;
 
@@ -261,12 +306,25 @@ function startUp(){
                         // pagesCollection['pageData'][index].attr('data-stellar-background-ratio', Math.random())
                         // pagesCollection['pageData'][index].css('z-index', zIndexMax--);
                         // $('.mainView').append(pagesCollection['pageData'][index]);
-                        // returnJsonData('listPeople', jsonArgs1).done(function(data){
-                        // });
 
-                        // $('#foobar').flowtype({
-                        //     minFont : 28,
-                        //     maxFont : 36
+                        // returnJsonData('listPeople').done(function(data){
+                        //     // define object
+                        //     returnObject = $(php_page_section);
+
+                        //     // build object
+                        //     returnObject.find('.pageInfo h2').html(index);
+                        //     returnObject.find('.all-content').addClass(index);
+
+                        //     // Do Work here
+
+                        //     // Append return object to DOM
+                        //     $('#' + index).find('.container').html(returnObject);
+
+                        //     // Initiate FlowType
+                        //     $('#' + index).flowtype({
+                        //         minFont : 28,
+                        //         maxFont : 36
+                        //     });
                         // });
                         break;
                 }
