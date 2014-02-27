@@ -18,6 +18,7 @@ var filesToVariablesArray = [
     {'output_speaker': 'views/output_speaker.php'},
     {'guest_post': 'views/output_guestpost.php'},
     {'contact_form': 'views/output_contact_form.php'},
+    {'homevideo': 'views/output_homevideo.php'},
     {'slide_page': 'views/output_slide_page.php'}
 ];
 var pageOrder;
@@ -168,10 +169,15 @@ function startUp(){
                             returnGuestbook.find('ul').append(returnGuestPost);
                         });
 
+                        // append guestbook
                         returnObject.find('.all-content').html(returnGuestbook);
-                    });
 
-                    returnObject.find('.all-content').after(_.unescape(data));
+                        // append Homevideo
+                        returnObject.find('.all-content').append(php_homevideo);
+
+                        // Call jPlayer
+                        initJplayer('#jquery_jplayer_1');
+                    });
 
                     // Append return object to DOM
                     $('#' + defaultPage).find('.container').html(returnObject);
@@ -200,7 +206,7 @@ function startUp(){
                             returnObject.find('.all-content').addClass(index);
 
                             returnJsonData('listSponsors').done(function(sponsorsData) {
-                                debug0 = sponsorsData;
+                                // debug0 = sponsorsData;
 
                                 // Loop Sponsor categories
                                 _.each(data, function(value, key) {
@@ -265,55 +271,91 @@ function startUp(){
                             returnObject.find('.pageInfo h2').html(index);
                             returnObject.find('.all-content').addClass(index);
 
-                            // Loop events
-                            _.each(data, function(value, key) {
-                                returnEvent = $(php_output_event);
+                            returnJsonData('listPeople').done(function(speakersData) {
+                                // Loop events
+                                _.each(data, function(value, key) {
+                                    returnEvent = $(php_output_event);
 
-                                _.each(value, function(val, k) {
-                                    switch(k) {
-                                        case "start_date":
-                                            startDate = moment.unix(val).format('MMM DD, YY : hh:mm A');
-                                            returnEvent.find('.' + k).html(startDate);
-                                            break
-                                        case "end_date":
-                                            endDate = moment.unix(val).format('MMM DD, YY : hh:mm A');
-                                            returnEvent.find('.' + k).html(endDate);
-                                            break
-                                        case "the_content":
-                                            returnEvent.find('.' + k).html(_.unescape(val))
-                                            break;
-                                        default:
-                                            returnEvent.find('.' + k).html(val);
-                                            break;
-                                    }
+                                    _.each(value, function(val, k) {
+                                        switch(k) {
+                                            case "start_date":
+                                                startDate = moment.unix(val).format('MMM DD, YY : hh:mm A');
+                                                returnEvent.find('.' + k).html(startDate);
+                                                break
+                                            case "end_date":
+                                                endDate = moment.unix(val).format('MMM DD, YY : hh:mm A');
+                                                returnEvent.find('.' + k).html(endDate);
+                                                break
+                                            case "speakers":
+                                                _.each(val, function(speakerID) {
+                                                    _.each(speakersData, function(l, m) {
+                                                        if (l.post_id == speakerID) {
+                                                            eventSpeaker = $('<li />');
+                                                            eventSpeaker.append(l.first_name + ' ' + l. last_name);
+                                                            returnEvent.find('.' + k).append(eventSpeaker);
+                                                            // returnSpeaker = $(php_output_speaker);
+
+                                                            // _.each(l, function(n, o) {
+                                                            //     switch(o) {
+                                                            //         case "featuredImage":
+                                                            //             returnSpeaker.find('.' + o).find('img').attr('src', n);
+                                                            //             break;
+                                                            //         default:
+                                                            //             returnSpeaker.find('.' + o).html(n);
+                                                            //             break;
+                                                            //     }
+                                                            // });
+                                                            // returnEvent.find('.' + k).append(returnSpeaker);
+                                                        }
+                                                    });
+                                                });
+                                                break;
+                                            case "the_content":
+                                                returnEvent.find('.' + k).html(_.unescape(val))
+                                                break;
+                                            default:
+                                                returnEvent.find('.' + k).html(val);
+                                                break;
+                                        }
+                                    });
+
+                                    returnObject.find('.all-content').append(returnEvent);
+
                                 });
 
-                                returnObject.find('.all-content').append(returnEvent);
+                                // Build Form
+                                formObject = $(php_contact_form);
+                                formObject.attr('id', 'rsvpUsForm');
 
-                            });
+                                // Build select options
+                                _.each(data, function(value, key) {
+                                    formOption = $('<option />');
+                                    formOption.val(value.the_title);
+                                    formOption.html(value.the_title);
+                                    formObject.find('.selected_event').append(formOption);
+                                })
 
-                            // Build Form
-                            formObject = $(php_contact_form);
-                            formObject.attr('id', 'rsvpUsForm');
-                            returnObject.find('.all-content').append(formObject);
+                                // append form
+                                returnObject.find('.all-content').append(formObject);
 
-                            // Validate with capcha
-                            // Recaptcha.create("6LfGP-8SAAAAAIpRsYEJB_ILcRUPTuF7fQzd2jC7", 'contactCaptcha', {
-                            //     tabindex: 1,
-                            //     theme: "clean",
-                            //     callback: Recaptcha.focus_response_field
-                            // });
+                                // Validate with capcha
+                                // Recaptcha.create("6LfGP-8SAAAAAIpRsYEJB_ILcRUPTuF7fQzd2jC7", 'contactCaptcha', {
+                                //     tabindex: 1,
+                                //     theme: "clean",
+                                //     callback: Recaptcha.focus_response_field
+                                // });
 
-                            // Append return object to DOM
-                            $('#' + index).find('.container').append(returnObject);
+                                // Append return object to DOM
+                                $('#' + index).find('.container').append(returnObject);
 
-                            // Process form
-                            processForm($('#rsvpUsForm'));
+                                // Process form
+                                processForm($('#rsvpUsForm'));
 
-                            // Initiate FlowType
-                            $('#' + index).flowtype({
-                                minFont : 28,
-                                maxFont : 36
+                                // Initiate FlowType
+                                $('#' + index).flowtype({
+                                    minFont : 28,
+                                    maxFont : 36
+                                });
                             });
                         });
 
@@ -390,9 +432,10 @@ function startUp(){
                             returnObject.find('.pageInfo h2').html(index);
                             returnObject.find('.all-content').addClass(index);
 
-                            formObject = $(php_contact_form)
-                            formObject.attr('id', 'contactUsForm')
-                            returnObject.find('.all-content').html(formObject)
+                            formObject = $(php_contact_form);
+                            formObject.attr('id', 'contactUsForm');
+                            formObject.find('.selected_event').parent().parent().remove();
+                            returnObject.find('.all-content').html(formObject);
 
                             // Append returned object to DOM
                             $('#' + index).find('.container').html(returnObject);
@@ -697,8 +740,34 @@ function processForm(theForm){
             },
             address:{
                 required: true
+            },
+            selected_event: {
+                required: true
             }
         }
+    });
+}
+
+// jPlayer
+function initJplayer(target) {
+    $(target).jPlayer({
+        ready: function () {
+            $(this).jPlayer("setMedia", {
+                m4v: "http://www.jplayer.org/video/m4v/Big_Buck_Bunny_Trailer.m4v",
+                ogv: "http://www.jplayer.org/video/ogv/Big_Buck_Bunny_Trailer.ogv",
+                webmv: "http://www.jplayer.org/video/webm/Big_Buck_Bunny_Trailer.webm",
+                poster: "http://www.jplayer.org/video/poster/Big_Buck_Bunny_Trailer_480x270.png"
+            });
+        },
+        swfPath: defaultPageDir + "/machines/libraries/jplayer/",
+        supplied: "webmv, ogv, m4v",
+        size: {
+            width: "100%",
+            height: "100%",
+            cssClass: "jp-video-360p"
+        },
+        smoothPlayBar: true,
+        keyEnabled: true
     });
 }
 

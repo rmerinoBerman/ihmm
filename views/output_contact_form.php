@@ -30,6 +30,14 @@
 				<input type="text" class="telephone" name="telephone" />
 			</div>
 		</div>
+		<div class="formField">
+			<div class="fieldContent">
+				<label for="selected_event">Event</label>
+				<select class="selected_event" name="selected_event">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
 		<div class="formField" id="contactCaptcha"></div>
 		<div class="formField">
 			<input class="submit" type="submit" value="Submit"/>

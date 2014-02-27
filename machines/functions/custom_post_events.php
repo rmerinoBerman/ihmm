@@ -70,8 +70,8 @@
 	        	"input_name" => "end_date"
 	        )
 	    ),
-	    "speakers_checkbox" => array(
-	    	"id" => "speakers_checkbox",
+	    "events_speakers_checkbox" => array(
+	    	"id" => "events_speakers_checkbox",
 	        "name" => "Speaker(s)",
 	        "post_type" => "events",
 	        "position" => "side",
@@ -82,71 +82,6 @@
 	        	"input_name" => "speakers"
 	        )
 	    ),
-	    // "events_sample_color_meta" => array(
-	    // 	"id" => "events_sample_color_meta",
-	    //     "name" => "Sample Color",
-	    //     "post_type" => "events",
-	    //     "position" => "side",
-	    //     "priority" => "low",
-	    //     "callback_args" => array(
-	    //     	"input_type" => "input_colorpicker",
-	    //     	"input_name" => "sample_color",
-	    //     	"input_palette" => array(
-	    //     		'rgb(0, 59, 168);',
-	    //     		'rgb(102, 153, 51);',
-					// 'rgb(53, 109, 211);',
-					// 'rgb(95, 136, 211);',
-	    //     	)
-	    //     )
-	    // ),
-	    // "events_sample_editor_meta" => array(
-	    // 	"id" => "events_sample_editor_meta",
-	    //     "name" => "Sample Editor",
-	    //     "post_type" => "events",
-	    //     "position" => "side",
-	    //     "priority" => "low",
-	    //     "callback_args" => array(
-	    //     	"input_type" => "input_editor",
-	    //     	"input_name" => "sample_editor"
-	    //     )
-	    // ),
-	    // "events_sample_select_meta" => array(
-	    // 	"id" => "events_sample_select_meta",
-	    //     "name" => "Sample Select",
-	    //     "post_type" => "events",
-	    //     "position" => "side",
-	    //     "priority" => "low",
-	    //     "callback_args" => array(
-	    //     	"input_type" => "input_select",
-	    //     	"input_source" => "listEvents",
-	    //     	"input_name" => "sample_select"
-	    //     )
-	    // ),
-	    // "events_sample_checkbox_single_meta" => array(
-	    // 	"id" => "events_sample_checkbox_single_meta",
-	    //     "name" => "Sample Checkbox Single",
-	    //     "post_type" => "events",
-	    //     "position" => "side",
-	    //     "priority" => "low",
-	    //     "callback_args" => array(
-	    //     	"input_type" => "input_checkbox_single",
-	    //     	"input_name" => "events_sample_checkbox_single",
-	    //     	"input_text" => "Sample Option"
-	    //     )
-	    // ),
-	    // "events_sample_hidden_meta" => array(
-	    // 	"id" => "events_sample_hidden_meta",
-	    //     "name" => "Sample Hidden",
-	    //     "post_type" => "events",
-	    //     "position" => "side",
-	    //     "priority" => "low",
-	    //     "callback_args" => array(
-	    //     	"input_type" => "input_hidden",
-	    //     	"input_name" => "events_sample_hidden"
-	    //     )
-	    // ),
-
-
 	);
 
 // ADD META BOXES

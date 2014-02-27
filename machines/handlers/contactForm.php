@@ -38,18 +38,18 @@ fclose($fp);
 
 $ccString = "CC: renemerino4@gmail.com";
 
-$xml = json_decode(file_get_contents("http://sandbox.ingerman.com/_data/contacts/"));
-foreach ($xml as $key => $value) {
-	if($formArray['inquiryType'] == slugify($value->the_title)){
-		$ccString .= ", " . $value->email_address;
-	}
-}
+// $xml = json_decode(file_get_contents("http://www.ihmmanniversary.org/_data/contacts/"));
+// foreach ($xml as $key => $value) {
+// 	if($formArray['inquiryType'] == slugify($value->the_title)){
+// 		$ccString .= ", " . $value->email_address;
+// 	}
+// }
 
 $to = 'rmerino@bermangrp.com';
-//$to = 'wfaye@bermangrp.com';
-$subject = 'Contact Form Submission';
-$headers = "From: " . strip_tags($_POST['req-email']) . "\r\n";
-$headers .= "Reply-To: ". strip_tags($_POST['req-email']) . "\r\n";
+
+$subject = 'IHMM Contact Form Submission';
+$headers = "From: " . $formArray['primary_contact_name'] . " <" . strip_tags($formArray['email']) . ">\r\n";
+$headers .= "Reply-To: ". strip_tags($formArray['email']) . "\r\n";
 $headers .= $ccString . "\r\n";
 $headers .= "MIME-Version: 1.0\r\n";
 $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
