@@ -12,11 +12,11 @@ var filesToVariablesArray = [
     {'text_input': 'views/input_text.php'},
     {'mainView': 'views/mainView.php'},
     {'page_section': 'views/page_section.php'},
-    {'sponsors_wrapper': 'views/output_sponsors_wrapper.php'},
+    {'group_wrapper': 'views/output_group_wrapper.php'},
     {'output_event': 'views/output_event.php'},
     {'output_sponsor': 'views/output_sponsor.php'},
+    {'output_speaker': 'views/output_speaker.php'},
     {'sticky_side': 'views/output_sticky_side.php'},
-    {'person_item': 'views/output_person_item.php'},
     {'slide_page': 'views/output_slide_page.php'}
 ];
 var pageOrder;
@@ -152,7 +152,7 @@ function startUp(){
 
                         returnJsonData('listSponsor_categories').done(function(data){
                             // define object
-                            returnObject = $(php_page_section);
+                            var returnObject = $(php_page_section);
 
                             // build object
                             returnObject.find('.pageInfo h2').html(index);
@@ -163,7 +163,7 @@ function startUp(){
 
                                 // Loop Sponsor categories
                                 _.each(data, function(value, key) {
-                                    returnSponsorWrapper = $(php_sponsors_wrapper)
+                                    returnSponsorWrapper = $(php_group_wrapper)
 
                                     returnSponsorWrapper.addClass(slugify(value.the_title));
                                     returnSponsorWrapper.find('h3').html(value.the_title);
@@ -218,7 +218,7 @@ function startUp(){
 
                         returnJsonData('listEvents').done(function(data){
                             // define object
-                            returnObject = $(php_page_section);
+                            var returnObject = $(php_page_section);
 
                             // build object
                             returnObject.find('.pageInfo h2').html(index);
@@ -268,26 +268,48 @@ function startUp(){
                         pagesCollection['pageData'][index].css('z-index', zIndexMax--);
                         $('.mainView').append(pagesCollection['pageData'][index]);
 
-                        returnJsonData('listPeople_category').done(function(data){
-                            console.log(data)
+                        returnJsonData('listPeople_category').done(function(data) {
                             // define object
-                            returnObject = $(php_page_section);
+                            var returnObject = $(php_page_section);
 
                             // build object
                             returnObject.find('.pageInfo h2').html(index);
                             returnObject.find('.all-content').addClass(index);
 
                             returnJsonData('listPeople').done(function(peopleData) {
+                                console.log(peopleData)
 
-                                // _.each(data, function(value, key) {
-                                //     returnSpeakersWrapper = $(php_sponsors_wrapper);
+                                // loop speaker types
+                                _.each(data, function(value, key) {
+                                    returnSpeakersWrapper = $(php_group_wrapper);
 
-                                //     returnSpeakersWrapper.addClass(slugify(value.the_title));
-                                //     returnSpeakersWrapper.find('h3').html(value.the_title);
+                                    returnSpeakersWrapper.addClass(slugify(value.the_title));
+                                    returnSpeakersWrapper.find('h3').html(value.the_title);
 
-                                //     returnObject.find('.all-content').append(returnSpeakersWrapper);
+                                    // Loop speakers
+                                    _.each(peopleData, function(value1, key1) {
+                                        returnSpeaker = $(php_output_speaker);
 
-                                // });
+                                        _.each(value1, function(val, k) {
+                                            switch(k) {
+                                                case "featuredImage":
+                                                    returnSpeaker.find('.' + k).find('img').attr('src', val);
+                                                    break;
+                                                default:
+                                                    returnSpeaker.find('.' + k).html(val);
+                                                    break;
+                                            }
+                                        });
+
+                                        console.log(returnSpeaker.html())
+
+                                        if (value.post_id == value1.speaker_category) {
+                                            returnSpeakersWrapper.find('ul').append(returnSpeaker);
+                                            returnObject.find('.all-content').append(returnSpeakersWrapper);
+                                        }
+                                    });
+
+                                });
 
                             });
 

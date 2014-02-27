@@ -101,7 +101,7 @@
 	        "callback_args" => array(
 	        	"input_type" => "input_select",
 	        	"input_source" => "listPeople_category",
-	        	"input_name" => "category"
+	        	"input_name" => "speaker_category"
 	        )
 	    ),
 
