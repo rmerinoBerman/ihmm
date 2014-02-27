@@ -16,7 +16,8 @@ var filesToVariablesArray = [
     {'output_event': 'views/output_event.php'},
     {'output_sponsor': 'views/output_sponsor.php'},
     {'output_speaker': 'views/output_speaker.php'},
-    {'sticky_side': 'views/output_sticky_side.php'},
+    {'guest_post': 'views/output_guestpost.php'},
+    {'contact_form': 'views/output_contact_form.php'},
     {'slide_page': 'views/output_slide_page.php'}
 ];
 var pageOrder;
@@ -132,14 +133,54 @@ function startUp(){
         if((Object.keys(pagesCollection['pageData']).length) == pagesCollection.size){
             // first page gets special treatment
             if(pagesCollection.hideDefault){
-                jsonArgs1={
+                jsononArgs1={
                     idArray: []
                 }
                 pagesCollection['pageData'][defaultPage].attr('data-stellar-background-ratio', '0.07');
                 pagesCollection['pageData'][defaultPage].css('z-index', zIndexMax--);
                 $('.mainView').append(pagesCollection['pageData'][defaultPage]);
-                $('#' + defaultPage).flowtype({
-                    minFont : 21
+                
+                returnPageData(defaultPage).done(function(data) {
+                    // define object
+                    var returnObject = $(php_page_section);
+
+                    // build object
+                    returnObject.find('.pageInfo h2').html(defaultPage);
+                    returnObject.find('.all-content').addClass(defaultPage);
+
+                    returnJsonData('listGuestposts').done(function(guestData) {
+                        returnGuestbook = $(php_group_wrapper);
+
+                        returnGuestbook.find('h3').remove();
+                        returnGuestbook.addClass('guest-book');
+
+                        // loop guest posts
+                        _.each(guestData, function(value, key) {
+                            returnGuestPost = $(php_guest_post);
+
+                            _.each(value, function(val, k) {
+                                switch(k) {
+                                    default:
+                                        returnGuestPost.find('.' + k).html(_.unescape(val));
+                                        break;
+                                }
+                            });
+                            returnGuestbook.find('ul').append(returnGuestPost);
+                        });
+
+                        returnObject.find('.all-content').html(returnGuestbook);
+                    });
+
+                    returnObject.find('.all-content').after(_.unescape(data));
+
+                    // Append return object to DOM
+                    $('#' + defaultPage).find('.container').html(returnObject);
+
+                    // Initiate FlowType
+                    $('#' + defaultPage).flowtype({
+                        minFont : 28,
+                        maxFont : 36
+                    });
                 });
             }
             // subsequent pages are then dealt with
@@ -251,8 +292,23 @@ function startUp(){
 
                             });
 
+                            // Build Form
+                            formObject = $(php_contact_form);
+                            formObject.attr('id', 'rsvpUsForm');
+                            returnObject.find('.all-content').append(formObject);
+
+                            // Validate with capcha
+                            // Recaptcha.create("6LfGP-8SAAAAAIpRsYEJB_ILcRUPTuF7fQzd2jC7", 'contactCaptcha', {
+                            //     tabindex: 1,
+                            //     theme: "clean",
+                            //     callback: Recaptcha.focus_response_field
+                            // });
+
                             // Append return object to DOM
-                            $('#' + index).find('.container').html(returnObject);
+                            $('#' + index).find('.container').append(returnObject);
+
+                            // Process form
+                            processForm($('#rsvpUsForm'));
 
                             // Initiate FlowType
                             $('#' + index).flowtype({
@@ -277,7 +333,6 @@ function startUp(){
                             returnObject.find('.all-content').addClass(index);
 
                             returnJsonData('listPeople').done(function(peopleData) {
-                                console.log(peopleData)
 
                                 // loop speaker types
                                 _.each(data, function(value, key) {
@@ -301,8 +356,6 @@ function startUp(){
                                             }
                                         });
 
-                                        console.log(returnSpeaker.html())
-
                                         if (value.post_id == value1.speaker_category) {
                                             returnSpeakersWrapper.find('ul').append(returnSpeaker);
                                             returnObject.find('.all-content').append(returnSpeakersWrapper);
@@ -322,6 +375,45 @@ function startUp(){
                                 maxFont : 36
                             });
                         });
+                        break;
+
+                    case "contact":
+                        pagesCollection['pageData'][index].attr('data-stellar-background-ratio', Math.random())
+                        pagesCollection['pageData'][index].css('z-index', zIndexMax--);
+                        $('.mainView').append(pagesCollection['pageData'][index]);
+
+                        returnPageData(index).done(function(data) {
+                            // define object
+                            var returnObject = $(php_page_section);
+
+                            // build object
+                            returnObject.find('.pageInfo h2').html(index);
+                            returnObject.find('.all-content').addClass(index);
+
+                            formObject = $(php_contact_form)
+                            formObject.attr('id', 'contactUsForm')
+                            returnObject.find('.all-content').html(formObject)
+
+                            // Append returned object to DOM
+                            $('#' + index).find('.container').html(returnObject);
+
+                            // Validate with capcha
+                            // Recaptcha.create("6LfGP-8SAAAAAIpRsYEJB_ILcRUPTuF7fQzd2jC7", 'contactCaptcha', {
+                            //     tabindex: 1,
+                            //     theme: "clean",
+                            //     callback: Recaptcha.focus_response_field
+                            // });
+
+                            // Process form
+                            processForm($('#contactUsForm'));
+
+                            // Initiate FlowType
+                            $('#' + index).flowtype({
+                                minFont : 28,
+                                maxFont : 36
+                            });
+                        });
+
                         break;
 
                     default:
@@ -518,6 +610,97 @@ function startUp(){
 
 
     }
+
+// PROCESS FORM
+function processForm(theForm){
+    theForm.validate({
+        errorClass: "formError",
+        submitHandler: function(thisForm) {
+            formData = theForm.serialize();
+            postArgs = {
+                challenge: $('#recaptcha_challenge_field').val(),
+                response: $('#recaptcha_response_field').val()              
+            }
+
+//            $.post(pageDir + "/machines/libraries/recaptcha/recaptchaResponse.php", postArgs, function(data){
+                if(1 == 1){
+//                if(data.substring(0,4) == "true"){
+
+                    $.post(pageDir + "/machines/handlers/contactForm.php", { formData: formData }, function(data) {
+                        if(data == "success"){
+
+                            $(".formResponse").html("Form sent!");
+                            $(".formResponse").css('color', 'green');
+                            $('#contactCaptcha').find('.fieldResponse').html('');
+                        } else {
+                            $(".formResponse").html("Form not sent. Please refresh the page and try again");
+                            $(".formResponse").css('color', 'red');
+                        }
+                        
+                    });
+
+                } else {
+                    Recaptcha.reload()
+                    returnObject = $('<div class="fieldResponse">Incorrect Captcha, please try again</div>');
+                    $('#contactCaptcha').append(returnObject)
+                }
+//            })
+
+        },
+        invalidHandler: function(event, validator) {
+            errors = validator.numberOfInvalids();
+            if (errors) {
+                message = errors == 1 ? 'You missed 1 field.' : 'You missed ' + errors + ' fields.';
+                $(".formResponse").html(message);
+                $(".formResponse").show();
+            } else {
+                $(".formResponse").hide();
+            }
+        },
+        errorPlacement: function(error, element) {
+            switch(element.attr("name")){
+                case "spam":
+                    $("input[name='spam']").parent().after("<div class='fieldResponse'>" + error[0].outerHTML + "</div>");
+                break;
+                case "transportation":
+                    $("input[name='transportation']").parent().after("<div class='fieldResponse'>" + error[0].outerHTML + "</div>");
+                break;
+                default:
+                    element.parent().after("<div class='fieldResponse'>" + error[0].outerHTML + "</div>");
+            }
+        },
+        messages: {
+            email: {
+                email: "Your email address must be in the format of name@domain.com"
+            },
+            telephone: {
+                phoneUS: "Your phone number must be in the format of 212-555-1000"
+            },
+        },
+        rules: {
+            email: {
+                required: true,
+                email: true
+            },
+            primary_contact_name:{
+                required: true
+            },
+            company:{
+                required: true
+            },
+            telephone:{
+                required: true,
+                phoneUS: true
+            },
+            company:{
+                required: true
+            },
+            address:{
+                required: true
+            }
+        }
+    });
+}
 
 // ADMIN
     // LOAD JQUERY UI DATE PICKER

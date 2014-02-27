@@ -27,6 +27,9 @@
     	wp_register_script('spectrum', get_template_directory_uri() . '/machines/libraries/spectrum/spectrum.js', array('jquery'), '1.0', false );
     	wp_enqueue_script('spectrum');
 
+    	wp_register_script('validate', get_template_directory_uri() . '/machines/libraries/validate/validate.js', '', '1.0', false );
+    	wp_enqueue_script('validate');
+
     	wp_register_script('dynamics', get_template_directory_uri() . '/machines/dynamics.js', array('timepicker'), '1.0', false );
     	wp_enqueue_script('dynamics');
 

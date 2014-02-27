@@ -14,6 +14,7 @@
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,600' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="<?php echo PAGEDIR; ?>/styles/styles.min.css" type="text/css" media="screen">
 		<!--[if IE]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+		<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 	</head>
 	<body data-tempdir="<?php echo PAGEDIR; ?>">
 		<?php
