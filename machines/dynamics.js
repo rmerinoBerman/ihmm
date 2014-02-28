@@ -19,6 +19,7 @@ var filesToVariablesArray = [
     {'guest_post': 'views/output_guestpost.php'},
     {'contact_form': 'views/output_contact_form.php'},
     {'homevideo': 'views/output_homevideo.php'},
+    {'homeintro': 'views/output_homeintro.php'},
     {'slide_page': 'views/output_slide_page.php'}
 ];
 var pageOrder;
@@ -33,21 +34,21 @@ $(document).ready(function() {
     } else {
         pageDir = $('body').data('tempdir');
     }
-    loadFilesToVariables(filesToVariablesArray);
-        // var config = {
-        //  kitId: 'mhq7lpe',
-        //  scriptTimeout: 1000,
-        //  loading: function() {
-        //  // JavaScript to execute when fonts start loading
-        //  },
-        //  active: function() {
-        //      loadFilesToVariables(filesToVariablesArray);
-        //  },
-        //  inactive: function() {
-        //      loadFilesToVariables(filesToVariablesArray);
-        //  }
-        // };
-        // var h=document.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+=" wf-inactive"},config.scriptTimeout);var tk=document.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s)
+    // loadFilesToVariables(filesToVariablesArray);
+        var config = {
+         kitId: 'kkw3dmu',
+         scriptTimeout: 1000,
+         loading: function() {
+         // JavaScript to execute when fonts start loading
+         },
+         active: function() {
+             loadFilesToVariables(filesToVariablesArray);
+         },
+         inactive: function() {
+             loadFilesToVariables(filesToVariablesArray);
+         }
+        };
+        var h=document.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+=" wf-inactive"},config.scriptTimeout);var tk=document.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s)
     });
 
 // LOAD FILES TO VARIABLES
@@ -146,38 +147,15 @@ function startUp(){
                     var returnObject = $(php_page_section);
 
                     // build object
-                    returnObject.find('.pageInfo h2').html(defaultPage);
+                    returnObject.find('.pageInfo h2').remove();
                     returnObject.find('.all-content').addClass(defaultPage);
 
-                    returnJsonData('listGuestposts').done(function(guestData) {
-                        returnGuestbook = $(php_group_wrapper);
-
-                        returnGuestbook.find('h3').remove();
-                        returnGuestbook.addClass('guest-book');
-
-                        // loop guest posts
-                        _.each(guestData, function(value, key) {
-                            returnGuestPost = $(php_guest_post);
-
-                            _.each(value, function(val, k) {
-                                switch(k) {
-                                    default:
-                                        returnGuestPost.find('.' + k).html(_.unescape(val));
-                                        break;
-                                }
-                            });
-                            returnGuestbook.find('ul').append(returnGuestPost);
-                        });
-
-                        // append guestbook
-                        returnObject.find('.all-content').html(returnGuestbook);
-
-                        // append Homevideo
-                        returnObject.find('.all-content').append(php_homevideo);
-
-                        // Call jPlayer
-                        initJplayer('#jquery_jplayer_1');
-                    });
+                    // append home intro
+                    returnIntro = $(php_homeintro);
+                    imageURL = returnIntro.find('.logo-big img').attr('src');
+                    returnIntro.find('.logo-big img').attr('src', defaultPageDir + imageURL);
+                    returnIntro.find('.intro-content').html(_.unescape(data));
+                    returnObject.find('.all-content').append(returnIntro)
 
                     // Append return object to DOM
                     $('#' + defaultPage).find('.container').html(returnObject);
@@ -185,13 +163,62 @@ function startUp(){
                     // Initiate FlowType
                     $('#' + defaultPage).flowtype({
                         minFont : 28,
-                        maxFont : 36
+                        maxFont : 120
                     });
                 });
             }
             // subsequent pages are then dealt with
             _.each(pageOrder, function(value, index){
                 switch(index){
+                    case "guestbook":
+                        pagesCollection['pageData'][index].attr('data-stellar-background-ratio', Math.random())
+                        pagesCollection['pageData'][index].css('z-index', zIndexMax--);
+                        $('.mainView').append(pagesCollection['pageData'][index]);
+
+                        returnJsonData('listGuestposts').done(function(guestData) {
+                            // define object
+                            var returnObject = $(php_page_section);
+
+                            // build object
+                            returnObject.find('.pageInfo h2').html(index);
+                            returnObject.find('.all-content').addClass(index);
+                            
+                            returnGuestbook = $(php_group_wrapper);
+                            returnGuestbook.find('h3').remove();
+
+                            // loop guest posts
+                            _.each(guestData, function(value, key) {
+                                returnGuestPost = $(php_guest_post);
+
+                                _.each(value, function(val, k) {
+                                    switch(k) {
+                                        default:
+                                            returnGuestPost.find('.' + k).html(_.unescape(val));
+                                            break;
+                                    }
+                                });
+                                returnGuestbook.find('ul').append(returnGuestPost);
+                            });
+
+                            // append guestbook
+                            returnObject.find('.all-content').append(returnGuestbook);
+
+                            // append Homevideo
+                            returnObject.find('.all-content').append(php_homevideo);
+
+                            // Call jPlayer
+                            initJplayer('#jquery_jplayer_1');
+
+                            // Append return object to DOM
+                            $('#' + index).find('.container').html(returnObject);
+
+                            // Initiate FlowType
+                            $('#' + index).flowtype({
+                                minFont : 28,
+                                maxFont : 36
+                            });
+                        });
+                        break;
                     case "sponsors":
                         pagesCollection['pageData'][index].attr('data-stellar-background-ratio', Math.random())
                         pagesCollection['pageData'][index].css('z-index', zIndexMax--);
@@ -466,7 +493,7 @@ function startUp(){
 
                         // returnJsonData('listPeople').done(function(data){
                         //     // define object
-                        //     returnObject = $(php_page_section);
+                        //     var returnObject = $(php_page_section);
 
                         //     // build object
                         //     returnObject.find('.pageInfo h2').html(index);
@@ -604,13 +631,19 @@ function startUp(){
             hideDefault: true
         };
         mainViewObject.find('.menu-item').each(function(index){
-            if((pagesCollection.hideDefault) && (slugify($(this).children('a').text()) == defaultPage)){
+            // if((pagesCollection.hideDefault) && (slugify($(this).children('a').text()) == defaultPage)){
+            //     $(this).remove();
+            // } else {
+            //     pageOrder[slugify($(this).children('a').text())] = index;
+            //     $(this).children('a').attr('href', slugify($(this).children('a').text()));
+            //     $(this).children('a').data('slide', slugify($(this).children('a').text()));
+            // }
+            if ( slugify($(this).children('a').text()) == defaultPage ) {
                 $(this).remove();
-            } else {
-                pageOrder[slugify($(this).children('a').text())] = index;
-                $(this).children('a').attr('href', slugify($(this).children('a').text()));
-                $(this).children('a').data('slide', slugify($(this).children('a').text()));
             }
+            pageOrder[slugify($(this).children('a').text())] = index;
+            $(this).children('a').attr('href', slugify($(this).children('a').text()));
+            $(this).children('a').data('slide', slugify($(this).children('a').text()));
             pagesCollection.size++
         });
         mainViewObject.find('.logoLink').attr('href', defaultPage);
@@ -643,7 +676,7 @@ function startUp(){
                             returnObject = $(php_slide_page);
                             returnObject.attr('id', value.pageID);
                             returnObject.attr('data-slide', value.pageID);
-                            returnObject.find('.container').append(data);
+                            // returnObject.find('.container').append(data);
                             pagesCollection['pageData'][value.pageID] = returnObject;
                             checkPagesCollection();
 

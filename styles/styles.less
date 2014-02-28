@@ -2,24 +2,6 @@
 @import url('grid.less');
 @import url('mixins.less');
 
-@maxWidth: 1440px;
-
-@media0: ~"(min-width: 1440px)";
-@media0_: ~"(max-width: 1439px)";
-
-@media1: ~"(min-width: 1200px)";
-@media1_: ~"(max-width: 1199px)";
-
-@media2: ~"(min-width: 960px)";
-@media2_: ~"(max-width: 959px)";
-
-@media3: ~"(min-width: 720px)";
-@media3_: ~"(max-width: 719px)";
-
-@media4: ~"(min-width: 480px)";
-@media4_: ~"(max-width: 479px)";
-
-
 .border-radius(@radius) {
   -webkit-border-radius: @radius;
      -moz-border-radius: @radius;
@@ -52,25 +34,116 @@
 	*vertical-align: @vAlign;
 }
 
+.textMask{
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+	background-size: 0; /* 'Hide' bg image for all */
+	-webkit-background-size: auto; /* But show bg image for Webkit/Opera */
+	-o-background-size: 0; /* Hide for Opera. Does *NOT* work (in newer Opera's). Needs hack below :( */
+}
+
+.background-size(@size: cover) {
+	-webkit-background-size: @size;
+	-moz-background-size: @size;
+	-o-background-size: @size;
+	background-size: @size;
+}
+
+/* Widths */
+@maxWidth: 1440px;
+@defaultWidth: 1150px;
+
+@media0: ~"(min-width: 1440px)";
+@media0_: ~"(max-width: 1439px)";
+
+@media1: ~"(min-width: 1200px)";
+@media1_: ~"(max-width: 1199px)";
+
+@media2: ~"(min-width: 960px)";
+@media2_: ~"(max-width: 959px)";
+
+@media3: ~"(min-width: 720px)";
+@media3_: ~"(max-width: 719px)";
+
+@media4: ~"(min-width: 480px)";
+@media4_: ~"(max-width: 479px)";
+
+/* Colors */
+@green: rgb(0, 116, 107);
+@blue: rgb(0, 87, 163);
+@red: rgb(190, 30, 45);
+
 @black: rgb(0, 0, 0);
-@white: rgb(255, 255, 255);
-@greyDarker: rgb(54, 54, 54);
+@greyDarkest: rgb(37, 37, 37);
+@greyDarker: rgb(59, 59, 59);
 @greyDark: rgb(70, 70, 70);
 @greyMid: rgb(87, 87, 87);
 @grey: rgb(125, 125, 125);
 @greyLight: rgb(146, 146, 146);
-@greyLightMid: rgb(194, 194, 194);
 @greyLighter: rgb(206, 206, 206);
 @greyLightest: rgb(214, 214, 214);
+@greyLightester: rgb(235, 235, 235);
+@white: rgb(255, 255, 255);
+
+/* Fonts */
+@fontSerif: "ff-tisa-web-pro",serif;
+@fontSans: "futura-pt",sans-serif;
+@fontSansLight: 300;
+@fontSansBook: 400;
+@fontSerifRegular: 400;
+@fontSerifBold: 700;
+
+.centerContent() {
+	max-width: @maxWidth;
+    margin: 0px auto;
+
+	@media only screen and @media0 {
+		    margin: 0px auto;
+			// width: @defaultWidth;
+			position: relative;
+		}
+
+		@media only screen and @media1 and @media0_{
+		    margin: 0px auto;
+			width: 80%;
+			position: relative;
+		}
+
+		@media only screen and @media2 and @media1_{
+		    margin: 0px auto;
+			width: 80%;
+			position: relative;
+		}
+
+		@media only screen and @media3 and @media2_{
+		    margin: 0px auto;
+			width: 80%;
+			position: relative;
+		}
+
+		@media only screen and @media4 and @media3_{
+		    margin: 0px auto;
+			width: 90%;
+			position: relative;
+		}
+
+		@media only screen and @media4_{
+		    margin: 0px auto;
+			width: 90%;
+			position: relative;
+		}
+}
 
 /* Global */
+html {
+	font-size: 62.5%;
+}
 
 body {
-	font-family: "proxima-nova";
+	font-family: @fontSerif;
 	font-weight: 400;
-	font-size: 62.5%;
+	font-size: 1em;
 	color: @grey;
-	background-color: @greyLightest;
 }
 img {
 	max-width: 100%;
@@ -110,59 +183,125 @@ a:visited {
 	display: none;
 }
 
-.showMenu{
-	left: 1% !important;
-}
+// .showMenu{
+// 	left: 1% !important;
+// }
 
 .headerMenu {
 	position:fixed;
-	top:0px;
-	left: 1%;
-	width:160px; 
-	height:100%; 
-	background-color: @black;
-	background-color: rgba(0, 0, 0, 0.8);
-	z-index:400;
+	width: 100%;
+	z-index: 400;
+	padding-top: 30px;
+	background-color: @greyLightest;
+	background-image: url('../images/graphics/bg-pattern.jpg');
 	.box-sizing(border-box);
-	padding: 20px;
-	#logo {
-		text-align: center;
-		.box-shadow(0px 0px 1px 2px @greyLight);
-		img{
 
-		}
+	.centerContent {
+		.centerContent();
 	}
-	#nav {
-		text-align: right;
-		margin: 30px 0 0 0;
-		ul{
-			padding: 0px;
-			list-style-type: none;
-			li{
-				a{
-					display: block;
-					color: @grey;
-					text-transform: uppercase;
-					padding: 10px 0px;
-					font-size: 1.5em;
-					&:hover{
-						color: @greyDark;
+	
+	.header-top {
+
+		#logo {
+			.inlineBlocker();
+			.box-sizing(border-box);
+			width: 48%;
+			padding-left: 10%;
+
+			@media only screen and @media1 and @media0_ {
+				padding-left: 2%;
+			}
+
+			@media only screen and @media1_ {
+				padding-left: 0%;
+			}
+
+			a {
+				.inlineBlocker(bottom);
+				width: 115px;
+			}
+		}
+		.social-media {
+			.inlineBlocker();
+			.box-sizing(border-box);
+			width: 50%;
+			text-align: right;
+			padding:24px 9%;
+
+			@media only screen and @media1 and @media0_ {
+				padding: 24px 2%;
+			}
+
+			@media only screen and @media1_ {
+				padding-right: 0%;
+			}
+
+			.hashtag {
+				font-size: 1.5em;
+				font-family: @fontSans;
+				margin-bottom: 6px;
+				color: @greyMid;
+			}
+
+			ul {
+				list-style: none;
+				margin: 0px;
+				padding: 0px;
+
+				li {
+					.inlineBlocker();
+					margin-left: 5px;
+					width: 26px;
+
+					img {
+						width: 26px;
 					}
 				}
 			}
 		}
 	}
+	#nav-bar {
+		background-color: @white;
+		margin-top: 15px;
+		border-bottom: 1px solid @grey;
 
-	@media only screen and @media4 and @media3_{
-		left: -160px;
+		ul {
+			margin: 0px;
+			padding: 0px;
+			text-align: center;
+
+			li {
+				.inlineBlocker;
+
+				@media only screen and @media3_ {
+					display: block;
+				}
+
+				a {
+					display: block;
+					font-family: @fontSans;
+					font-size: 2.4em;
+					text-transform: uppercase;
+					font-weight: @fontSansLight;
+					line-height: 100%;
+					padding: 20px 42px;
+
+					&:hover {
+						color: @green;
+					}
+
+					@media only screen and @media2 and @media1_ {
+						padding: 20px 26px
+					}
+
+					@media only screen and @media3 and @media2_ {
+						font-size: 1.8em;
+						padding: 20px;
+					}
+				}
+			}
+		}
 	}
-
-	@media only screen and @media4_{
-		left: -160px;
-	}
-
-	.transition;
-
 }
 
 
@@ -174,7 +313,8 @@ a:visited {
 	height:auto;
 	position: relative;
 	padding:140px 0;
-	.box-shadow(0px 3px 10px @greyLight);
+	background-color: @greyLightest;
+	background-image: url('../images/graphics/bg-pattern.jpg');
 
 	.container{
 	    max-width: @maxWidth;
@@ -197,7 +337,7 @@ a:visited {
 		}
 
 		@media only screen and @media3 and @media2_{
-		    margin: 0px auto 0px 24%;
+		    margin: 0px auto;
 			width: 70%;
 		}
 
@@ -215,28 +355,53 @@ a:visited {
 
 }
 
-#sample-page{
-//	background-image: url('http://174.136.12.85/~retech/wp-content/themes/retech/images/graphics/backer1.jpg');
-	.gradient(@white, @grey);
-	color: @greyDarker;
-	.box-shadow(0px 3px 10px @black);
-	.container{
-		width: 76%;
-		margin-left: 20%;
-		@media only screen and @media4_{
-			width: 100%;
-			margin-left: 0%;
+#home {
+	padding: 240px 0px 0px;
+
+	.intro {
+
+		.logo-big {
+			.inlineBlocker;
+			width: 36%;
+			margin-right: 2%;
+		}
+		.intro-content {
+			.inlineBlocker;
+			width: 60%;
+
+			h2 {
+				color: @blue;
+				font-size: 1.6em;
+				font-weight: @fontSerifRegular;
+				margin-top: 0.7em;
+			}
+
+			p {
+				font-size: 0.6em;
+				line-height: 1.4;
+			}
 		}
 	}
 }
 
-
-#foobar{
-	background-color: @greyDarker;
-	p{
-		color: @greyLightest;
-		font-size: 0.6em;
-		line-height: 180%;
-	}
+/*-----------------------------------------------------------------------------------*/
+/*	DELETE
+/*-----------------------------------------------------------------------------------*/
+#home .video {
+	display: none;
 }
 
+// #sample-page{
+// //	background-image: url('http://174.136.12.85/~retech/wp-content/themes/retech/images/graphics/backer1.jpg');
+// 	.gradient(@white, @grey);
+// 	color: @greyDarker;
+// 	.box-shadow(0px 3px 10px @black);
+// 	.container{
+// 		width: 76%;
+// 		margin-left: 20%;
+// 		@media only screen and @media4_{
+// 			width: 100%;
+// 			margin-left: 0%;
+// 		}
+// 	}
+// }
