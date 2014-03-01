@@ -4,6 +4,10 @@
 	<div class="event_date">
 		<span class="start_date"></span> - <span class="end_date"></span>
 	</div>
-	<ul class="speakers"></ul>
 	<div class="the_content"></div>
+	<ul class="speakers">
+		<li>
+			<h4>Featured Speakers</h4>
+		</li>
+	</ul>
 </div>

@@ -16,6 +16,7 @@ var filesToVariablesArray = [
     {'output_event': 'views/output_event.php'},
     {'output_sponsor': 'views/output_sponsor.php'},
     {'output_speaker': 'views/output_speaker.php'},
+    {'speaker_info': 'views/output_speaker_info.php'},
     {'guest_post': 'views/output_guestpost.php'},
     {'contact_form': 'views/output_contact_form.php'},
     {'homevideo': 'views/output_homevideo.php'},
@@ -139,7 +140,7 @@ function startUp(){
                     idArray: []
                 }
                 pagesCollection['pageData'][defaultPage].attr('data-stellar-background-ratio', '0.07');
-                pagesCollection['pageData'][defaultPage].css('z-index', zIndexMax--);
+                // pagesCollection['pageData'][defaultPage].css('z-index', zIndexMax--);
                 $('.mainView').append(pagesCollection['pageData'][defaultPage]);
                 
                 returnPageData(defaultPage).done(function(data) {
@@ -184,6 +185,7 @@ function startUp(){
                             returnObject.find('.all-content').addClass(index);
                             
                             returnGuestbook = $(php_group_wrapper);
+                            returnGuestbook.addClass('guest-posts');
                             returnGuestbook.find('h3').remove();
 
                             // loop guest posts
@@ -192,6 +194,9 @@ function startUp(){
 
                                 _.each(value, function(val, k) {
                                     switch(k) {
+                                        case "company":
+                                            returnGuestPost.find('.' + k).append(val);
+                                            break;
                                         default:
                                             returnGuestPost.find('.' + k).html(_.unescape(val));
                                             break;
@@ -206,11 +211,11 @@ function startUp(){
                             // append Homevideo
                             returnObject.find('.all-content').append(php_homevideo);
 
-                            // Call jPlayer
-                            initJplayer('#jquery_jplayer_1');
-
                             // Append return object to DOM
                             $('#' + index).find('.container').html(returnObject);
+
+                            // Call jPlayer
+                            initJplayer('#jquery_jplayer_1');
 
                             // Initiate FlowType
                             $('#' + index).flowtype({
@@ -318,7 +323,9 @@ function startUp(){
                                                     _.each(speakersData, function(l, m) {
                                                         if (l.post_id == speakerID) {
                                                             eventSpeaker = $('<li />');
-                                                            eventSpeaker.append(l.first_name + ' ' + l. last_name);
+                                                            eventSpeakerAnchor = $('<a href="#" data-speakerid="'+speakerID+'" />');
+                                                            eventSpeakerAnchor.html(l.first_name + ' ' + l. last_name);
+                                                            eventSpeaker.html(eventSpeakerAnchor);
                                                             returnEvent.find('.' + k).append(eventSpeaker);
                                                             // returnSpeaker = $(php_output_speaker);
 
@@ -375,6 +382,9 @@ function startUp(){
                                 // Append return object to DOM
                                 $('#' + index).find('.container').append(returnObject);
 
+                                // Get Speaker info Popup;
+                                getSpeakerPopup('.event ul li a', speakersData);
+
                                 // Process form
                                 processForm($('#rsvpUsForm'));
 
@@ -416,13 +426,19 @@ function startUp(){
 
                                         _.each(value1, function(val, k) {
                                             switch(k) {
+                                                case "first_name":
+                                                    returnSpeaker.find('.' + k).parent().data('speakerid', value1.post_id);
+                                                    returnSpeaker.find('.' + k).html(val);
+                                                    break;
                                                 case "featuredImage":
                                                     returnSpeaker.find('.' + k).find('img').attr('src', val);
+                                                    returnSpeaker.find('.' + k).find('a').data('speakerid', value1.post_id);
                                                     break;
                                                 default:
                                                     returnSpeaker.find('.' + k).html(val);
                                                     break;
                                             }
+                                            console.log(returnSpeaker.find('.first_name').parent().data())
                                         });
 
                                         if (value.post_id == value1.speaker_category) {
@@ -432,6 +448,9 @@ function startUp(){
                                     });
 
                                 });
+
+                                // Get Speaker info Popup;
+                                getSpeakerPopup('.speaker-wrapper a', peopleData);
 
                             });
 
@@ -638,7 +657,7 @@ function startUp(){
             //     $(this).children('a').attr('href', slugify($(this).children('a').text()));
             //     $(this).children('a').data('slide', slugify($(this).children('a').text()));
             // }
-            if ( slugify($(this).children('a').text()) == defaultPage ) {
+            if ( slugify($(this).children('a').text()) == 'guestbook' ) {
                 $(this).remove();
             }
             pageOrder[slugify($(this).children('a').text())] = index;
@@ -796,11 +815,65 @@ function initJplayer(target) {
         supplied: "webmv, ogv, m4v",
         size: {
             width: "100%",
-            height: "100%",
-            cssClass: "jp-video-360p"
+            height: "auto",
+            cssClass: "fullWidth"
         },
         smoothPlayBar: true,
         keyEnabled: true
+    });
+}
+
+function getSpeakerPopup(target, data) {
+    // init Shadowbox
+    Shadowbox.init({
+        skipSetup: true
+    });
+    // Speaker Bio toggle
+    $(target).on('click', function(e) {
+        e.preventDefault();
+
+        speakerID = $(this).data('speakerid');
+
+        // Open bio with Shadowbox
+        Shadowbox.open({
+            content: '<div class="speaker-popup" />',
+            player: 'html',
+            width: 800,
+            height: 600,
+            options: {
+                onFinish: function() {
+                    returnSpeakerBio = $(php_speaker_info);
+
+                    _.each(data, function(value, key) {
+                        if (value.post_id == speakerID) {
+                            _.each(value, function(val, k) {
+                                switch(k) {
+                                    case 'featuredImage':
+                                        if(_.isNull(val)){
+                                            returnSpeakerBio.find('.photo').remove();
+                                        } else {
+                                            returnSpeakerBio.find('.photo').find('img').attr('alt', value.first_name + ' ' + value.last_name);
+                                            returnSpeakerBio.find('.photo').find('img').attr('src', val);
+                                        }
+                                        break;
+
+                                    case 'the_content':
+                                        returnSpeakerBio.find('.' + k).html(_.unescape(val));
+                                        break;
+
+                                    default:
+                                        returnSpeakerBio.find('.' + k).html(val);
+                                        break;
+                                }
+
+                                // Append speaker to popup
+                                $('.speaker-popup').html(returnSpeakerBio);
+                            });
+                        }
+                    });
+                },
+            }
+        });
     });
 }
 

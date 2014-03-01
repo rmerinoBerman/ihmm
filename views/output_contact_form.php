@@ -33,13 +33,15 @@
 		<div class="formField">
 			<div class="fieldContent">
 				<label for="selected_event">Event</label>
-				<select class="selected_event" name="selected_event">
-					<option value=""></option>
-				</select>
+				<div class="select-wrapper">
+					<select class="selected_event" name="selected_event">
+						<option value="">Select an Event</option>
+					</select>
+				</div>
 			</div>
 		</div>
-		<div class="formField" id="contactCaptcha"></div>
-		<div class="formField">
+		<!-- <div class="formField" id="contactCaptcha"></div> -->
+		<div class="formField formSubmit">
 			<input class="submit" type="submit" value="Submit"/>
 		</div>
 	</fieldset>

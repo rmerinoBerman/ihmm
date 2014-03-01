@@ -27,7 +27,11 @@
     	wp_register_script('spectrum', get_template_directory_uri() . '/machines/libraries/spectrum/spectrum.js', array('jquery'), '1.0', false );
     	wp_enqueue_script('spectrum');
 
-    	wp_enqueue_style('jplayer-style', get_template_directory_uri() . '/machines/libraries/jplayer/blue.monday/jplayer.blue.monday.css');
+    	wp_enqueue_style('shadowbox-style', get_template_directory_uri() . '/machines/libraries/shadowbox/shadowbox.css');
+    	wp_register_script('shadowbox', get_template_directory_uri() . '/machines/libraries/shadowbox/shadowbox.js', array('jquery'), '1.0', false );
+    	wp_enqueue_script('shadowbox');
+
+    	wp_enqueue_style('jplayer-style', get_template_directory_uri() . '/machines/libraries/jplayer/sleek/sleek.min.css');
     	wp_register_script('jplayer', get_template_directory_uri() . '/machines/libraries/jplayer/jquery.jplayer.min.js', array('jquery'), '2.5.0', false );
     	wp_enqueue_script('jplayer');
 

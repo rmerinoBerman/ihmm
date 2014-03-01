@@ -2,7 +2,6 @@
 <div class="mainView">
 	<div class="headerMenu">
 		<div class="centerContent">
-			<!-- <div class="menuButton">&#9776;</div> -->
 			<div class="header-top">
 				<div id="logo">
 					<a class="logoLink">
@@ -22,6 +21,7 @@
 		<div id="nav-bar">
 			<div class="centerContent">
 				<?php wp_nav_menu( array( 'theme_location' => 'header-menu' ) ); ?>
+				<div class="menuButton">&#9776;</div>
 			</div>
 		</div>
 	</div>
